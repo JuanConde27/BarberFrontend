@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard BarberShop</title>
+    <link rel="stylesheet" href="../styles/dashboard.css">
+    <!-- Boxicons CDN Link -->
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="logo_content">
+            <div class="logo">
+                <div class="logo_name" id="name_barber"></div>
+            </div>
+            <i class='bx bx-menu' id="btn"></i>
+        </div>
+        <ul class="nav_list">
+            <li>
+                <a href="#home_content">
+                    <i class='bx bx-grid-alt'></i>
+                    <span id="btn_table" class="links_name">Dashboard</span>
+                </a>
+                <span class="tooltip">Dashboard</span>
+            </li>
+            <li>
+                <a href="#">
+                    <i class='bx bx-user'></i>
+                    <span class="links_name">User</span>
+                </a>
+                <span class="tooltip">User</span>
+            </li>
+            <li>
+                <a href="#">
+                    <i class='bx bx-chat'></i>
+                    <span class="links_name">Messages</span>
+                </a>
+                <span class="tooltip">Messages</span>
+            </li>
+        </ul>
+        <div class="content">
+            <div class="user">
+                <div class="user_details">
+
+                    <div class="name_job">
+                        <div class="name">BarberShop</div>
+                        <div class="job">Log out -></div>
+                    </div>
+                </div>
+                <button><i class='bx bx-log-out' id="log_out"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="home_content">
+        <div class="text">Bookings</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Servicio</th>
+                    <th>Pedido</th>
+                    <th>Estado</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody id="booking_barber"></tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../scripts/dashboard.js"></script>
+    <script>
+
+        const booking_barber = document.getElementById('booking_barber');
+        //obtener el id del barbero
+        document.addEventListener('DOMContentLoaded', async () => {
+
+            const id = localStorage.getItem('id');
+            console.log(id);
+
+            if (!id) {
+                window.location.href = '../index.html';
+            }
+
+            if (!document.cookie) {
+                window.location.href = '../index.html';
+            }
+
+
+            const barbers = await fetch(`http://localhost:3000/api/barber/${id}`, {
+                method: 'GET',
+                headers: {
+                    authorization: `Bearer ${document.cookie.split('=')[1]}`
+                }
+            });
+
+            const barbersJson = await barbers.json();
+            console.log(barbersJson);
+
+            //obtener el nombre del barbero
+            const nameBarber = barbersJson.barber.name;
+
+            document.getElementById('name_barber').innerHTML = 'Hi ' + nameBarber + '!';
+
+            //obtener el id del barbero
+            const idBarber = barbersJson.barber._id;
+
+            const getBookings = async () => {
+                try {
+                    const response = await fetch(`http://localhost:3000/api/booking/barber/${idBarber}`, {
+                        method: 'GET',
+                        headers: {
+                            authorization: `Bearer ${document.cookie.split('=')[1]}`
+                        }
+                    });
+                    const bookings = await response.json();
+                    console.log(bookings);
+                    if (bookings.bookings.length === 0) {
+                        booking_barber.innerHTML = `<h2>No hay reservas</h2>`
+                    }
+                    bookings.bookings.forEach(booking => {
+                        booking_barber.innerHTML += `
+                <div class="booking">
+                    <div class="booking__name">
+                        <h3>${booking.name}</h3>
+                    </div>
+                    <div class="booking__date">
+                        <p>${booking.date.split('T')[0]}</p>
+                    </div>
+                    <div class="booking__time">
+                        <p>${booking.time}</p>
+                    </div>
+                    <div class="booking__service"> 
+                        <p>${booking.service}</p>
+                    </div>
+                    <div class="booking__comments">
+                        <p>${booking.comments}</p>
+                    </div>
+                    <div class="booking__status">
+                        <p>${booking.status}</p>
+                    </div>
+                    <div class="booking__delete">
+                        <button class="btn btn-danger" id="delete_booking" data-id="${booking._id}">Eliminar</button>
+                        <button class="btn btn-success" id="status_booking" data-id="${booking._id}">Confirmar</button>
+                    </div>
+                </div>
+                `
+                    });
+
+                    const deleteBooking = document.querySelectorAll('#delete_booking');
+                    deleteBooking.forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            Swal.fire({
+                                title: 'Are you sure?',
+                                text: "You won't be able to revert this!",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Yes, cancel it!'
+                            }).then(async (result) => {
+                                if (result.isConfirmed) {
+                                    const idBooking = e.target.dataset.id;
+                                    const response = await fetch(`http://localhost:3000/api/booking/${idBooking}`, {
+                                        method: 'DELETE',
+                                        headers: {
+                                            authorization: `Bearer ${document.cookie.split('=')[1]}`
+                                        }
+                                    });
+                                    const data = await response.json();
+                                    console.log(data);
+                                    if (data.message === 'Booking deleted successfully') {
+                                        Swal.fire(
+                                            'Deleted!',
+                                            'Your Booking has been deleted.',
+                                            'success'
+                                        ).then(function () {
+                                            window.location.reload();
+                                        });
+                                    }
+                                }
+                            })
+                        })
+                    })
+
+                    const statusBooking = document.querySelectorAll('#status_booking');
+                    statusBooking.forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            Swal.fire({
+                                title: 'Are you sure?',
+                                text: "You want to confirm this booking!",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Yes, confirm it!'
+                            }).then(async (result) => {
+                                if (result.isConfirmed) {
+                                    const idBooking = e.target.dataset.id;
+                                    const status = 'CONFIRMED';
+                                    const response = await fetch(`http://localhost:3000/api/booking/status/${idBooking}`, {
+                                        method: 'PUT',
+                                        headers: {
+                                            authorization: `Bearer ${document.cookie.split('=')[1]}`,
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({ status })
+                                    });
+                                    const data = await response.json();
+                                    console.log(data);
+                                    if (data.message === 'Booking updated successfully') {
+                                        statusBooking.disabled = true;
+                                        //poner en disabled el boton de confirmar
+                                        e.target.disabled = true;
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Your booking has been confirmed',
+                                            confirmButtonText: 'Ok'
+                                        }).then(function () {
+                                            window.location.reload();
+                                        });
+                                    }
+                                }
+                            })
+                        })
+                    })
+
+
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+
+            getBookings();
+
+        });
+
+        const logOutBtn = document.getElementById('log_out');
+        logOutBtn.addEventListener('click', () => {
+            document.cookie = 'jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            localStorage.removeItem('id');
+            window.location.href = '../index.html';
+        })
+
+    </script>
+</body>
+
+</html>

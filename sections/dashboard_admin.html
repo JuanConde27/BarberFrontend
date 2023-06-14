@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard BarberShop</title>
+    <link rel="stylesheet" href="../styles/dashboard.css">
+    <!-- Boxicons CDN Link -->
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="logo_content">
+            <div class="logo">
+                <div class="logo_name" id="name_admin"></div>
+            </div>
+            <i class='bx bx-menu' id="btn"></i>
+        </div>
+        <ul class="nav_list">
+            <li>
+                <a href="#home_content" id="btn_dashboard">
+                    <i class='bx bx-grid-alt'></i>
+                    <span id="btn_table" class="links_name">Dashboard</span>
+                </a>
+                <span class="tooltip">Dashboard</span>
+            </li>
+            <li>
+                <a href="#" id="btn_users">
+                    <i class='bx bx-user'></i>
+                    <span class="links_name">User</span>
+                </a>
+                <span class="tooltip">Users</span>
+            </li>
+            <li>
+                <a href="#" id="btn_barbers">
+                    <i class='bx bx-user-plus'></i>
+                    <span class="links_name">Create Barber</span>
+                </a>
+                <span class="tooltip">Create Barber</span>
+            </li>
+        </ul>
+        <div class="content">
+            <div class="user">
+                <div class="user_details">
+
+                    <div class="name_job">
+                        <div class="name">BarberShop</div>
+                        <div class="job">Log out -></div>
+                    </div>
+                </div>
+                <button><i class='bx bx-log-out' id="log_out"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="home_content">
+        <section class="users_section">
+            <div class="text">My users</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Fecha de creación</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="found_users"></tbody>
+            </table>
+        </section>
+        <section class="barbers_section">
+            <div class="text">My Barbers</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Fecha de creación</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="found_barbers"></tbody>
+            </table>
+        </section>
+        <section class="create_section">
+            <div class="create_container">
+                <div class="text">Create Barber</div>
+                <form id="crear_barbero">
+                    <input type="text" name="name" id="name" placeholder="Nombre">
+                    <input type="email" name="email" id="email"  placeholder="Correo">
+                    <input type="password" name="password" id="password" placeholder="Contraseña">
+                    <input type="submit" value="Crear">
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../scripts/dashboard.js"></script>
+    <script>
+
+
+        document.querySelector("#btn_dashboard").addEventListener("click", function(){
+            document.querySelector(".users_section").style.display = "none";
+            document.querySelector(".barbers_section").style.display = "block";
+            document.querySelector(".create_section").style.display = "none";
+        });
+
+        document.querySelector("#btn_users").addEventListener("click", function(){
+            document.querySelector(".users_section").style.display = "block";
+            document.querySelector(".barbers_section").style.display = "none";
+            document.querySelector(".create_section").style.display = "none";
+        });
+
+        document.querySelector("#btn_barbers").addEventListener("click", function(){
+            document.querySelector(".users_section").style.display = "none";
+            document.querySelector(".barbers_section").style.display = "none";
+            document.querySelector(".create_section").style.display = "block";
+        });
+
+        const found_users = document.getElementById('found_users');
+
+        document.addEventListener('DOMContentLoaded', async () => {
+
+            const id = localStorage.getItem('id');
+
+            if (!id) {
+                window.location.href = '../index.html';
+            }
+
+            if (!document.cookie) {
+                window.location.href = '../index.html';
+            }
+
+            const response = await fetch(`http://localhost:3000/api/admin/${id}`, {
+                method: 'GET',
+                headers: {
+                    authorization: `Bearer ${document.cookie.split('=')[1]}`
+                }
+            });
+
+            const responseJson = await response.json();
+            console.log(responseJson);
+            
+            //obtener el nombre del admin
+            const name_admin = document.getElementById('name_admin');
+            name_admin.innerHTML = `HI! ${responseJson.admin.name}`;
+
+            const users = await fetch(`http://localhost:3000/api/users`, {
+                method: 'GET',
+                headers: {
+                    authorization: `Bearer ${document.cookie.split('=')[1]}`
+                }
+            });
+            const usersJson = await users.json();
+            console.log(usersJson);
+            const usersArray = usersJson.users;
+            usersArray.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user._id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role}</td>
+                    <td>${user.createdAt.split('T')[0]}</td>
+                    <td>
+                        <button class="btn btn-danger" id="delete_user" data-id="${user._id}">Eliminar</button>
+                `;
+                found_users.appendChild(row);
+            });
+
+            const delete_user = document.querySelectorAll('#delete_user');
+            delete_user.forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    Swal.fire({
+                        title: '¿Estás seguro?',
+                        text: "No podrás revertir esta acción",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            const id = e.target.dataset.id;
+                            const response = await fetch(`http://localhost:3000/api/users/${id}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    authorization: `Bearer ${document.cookie.split('=')[1]}`
+                                }
+                            });
+                            const responseJson = await response.json();
+                            if (responseJson.message === 'User deleted successfully') {
+                                Swal.fire(
+                                    'Eliminado',
+                                    'El usuario ha sido eliminado',
+                                    'success'
+                                );
+                                window.location.reload();
+                            } else {
+                                Swal.fire(
+                                    'Error',
+                                    'El usuario no ha sido eliminado',
+                                    'error'
+                                );
+                            }
+                        }
+                    });
+                });
+            });
+
+            const barbers = await fetch(`http://localhost:3000/api/barber`, {
+                method: 'GET',
+                headers: {
+                    authorization: `Bearer ${document.cookie.split('=')[1]}`
+                }
+            });
+
+            const barbersJson = await barbers.json();
+            console.log(barbersJson);
+            const barbersArray = barbersJson.barbers;
+            const found_barbers = document.getElementById('found_barbers');
+            barbersArray.forEach(barber => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${barber._id}</td>
+                    <td>${barber.name}</td>
+                    <td>${barber.email}</td>
+                    <td>${barber.role}</td>
+                    <td>${barber.createdAt}</td>
+                    <td>
+                        <button class="btn btn-danger" id="delete_barber" data-id="${barber._id}">Eliminar</button>
+                `;
+                found_barbers.appendChild(row);
+            });
+
+            const delete_barber = document.querySelectorAll('#delete_barber');
+            delete_barber.forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    Swal.fire({
+                        title: '¿Estás seguro?',
+                        text: "No podrás revertir esta acción",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            const id = e.target.dataset.id;
+                            const response = await fetch(`http://localhost:3000/api/barber/${id}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    authorization: `Bearer ${document.cookie.split('=')[1]}`
+                                }
+                            });
+                            const responseJson = await response.json();
+                            if (responseJson.message === 'Barber deleted successfully') {
+                                Swal.fire(
+                                    'Eliminado',
+                                    'El barbero ha sido eliminado',
+                                    'success'
+                                );
+                                window.location.reload();
+                            } else {
+                                Swal.fire(
+                                    'Error',
+                                    'El barbero no ha sido eliminado',
+                                    'error'
+                                );
+                            }
+                        }
+                    });
+                });
+            });
+
+            const crear_barbero = document.getElementById('crear_barbero');
+            crear_barbero.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                if (name === '' || email === '' || password === '') {
+                    Swal.fire(
+                        'Error',
+                        'Todos los campos son obligatorios',
+                        'error'
+                    );
+                    return;
+                }
+                const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+                if (!regexPassword.test(password)) {
+                    Swal.fire(
+                        'Error',
+                        'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número',
+                        'error'
+                    );
+                    return;
+                }
+                const regexEmail = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+                if (!regexEmail.test(email)) {
+                    Swal.fire(
+                        'Error',
+                        'El email no es válido',
+                        'error'
+                    );
+                    return;
+                }
+                const regexName = /^[a-zA-ZÀ-ÿ\s]{1,40}$/;
+                if (!regexName.test(name)) {
+                    Swal.fire(
+                        'Error',
+                        'El nombre no es válido',
+                        'error'
+                    );
+                    return;
+                }
+                const response = await fetch('http://localhost:3000/api/barber', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        authorization: `Bearer ${document.cookie.split('=')[1]}`
+                    },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password
+                    })
+                });
+                const responseJson = await response.json();
+                console.log(responseJson);
+                if (responseJson.message === 'Barber created successfully') {
+                    Swal.fire(
+                        'Creado',
+                        'El barbero ha sido creado',
+                        'success'
+                    ).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire(
+                        'Error',
+                        'El barbero no ha sido creado',
+                        'error'
+                    );
+                }
+            });
+        });
+
+        const log_out = document.getElementById('log_out');
+        log_out.addEventListener('click', () => {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "No podrás revertir esta acción",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.cookie = 'jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                    localStorage.removeItem('id');
+                    window.location.href = '../index.html';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
