@@ -137,7 +137,7 @@
                 window.location.href = '../index.html';
             }
 
-            const response = await fetch(`http://localhost:3000/api/admin/${id}`, {
+            const response = await fetch(`https://barberbackend-3z4s.onrender.com/api/admin/${id}`, {
                 method: 'GET',
                 headers: {
                     authorization: `Bearer ${document.cookie.split('=')[1]}`
@@ -151,7 +151,7 @@
             const name_admin = document.getElementById('name_admin');
             name_admin.innerHTML = `HI! ${responseJson.admin.name}`;
 
-            const users = await fetch(`http://localhost:3000/api/users`, {
+            const users = await fetch(`https://barberbackend-3z4s.onrender.com/api/users`, {
                 method: 'GET',
                 headers: {
                     authorization: `Bearer ${document.cookie.split('=')[1]}`
@@ -187,7 +187,7 @@
                     }).then(async (result) => {
                         if (result.isConfirmed) {
                             const id = e.target.dataset.id;
-                            const response = await fetch(`http://localhost:3000/api/users/${id}`, {
+                            const response = await fetch(`https://barberbackend-3z4s.onrender.com/api/users/${id}`, {
                                 method: 'DELETE',
                                 headers: {
                                     authorization: `Bearer ${document.cookie.split('=')[1]}`
@@ -213,7 +213,7 @@
                 });
             });
 
-            const barbers = await fetch(`http://localhost:3000/api/barber`, {
+            const barbers = await fetch(`https://barberbackend-3z4s.onrender.com/api/barber`, {
                 method: 'GET',
                 headers: {
                     authorization: `Bearer ${document.cookie.split('=')[1]}`
@@ -252,7 +252,7 @@
                     }).then(async (result) => {
                         if (result.isConfirmed) {
                             const id = e.target.dataset.id;
-                            const response = await fetch(`http://localhost:3000/api/barber/${id}`, {
+                            const response = await fetch(`https://barberbackend-3z4s.onrender.com/api/barber/${id}`, {
                                 method: 'DELETE',
                                 headers: {
                                     authorization: `Bearer ${document.cookie.split('=')[1]}`
@@ -319,7 +319,7 @@
                     );
                     return;
                 }
-                const response = await fetch('http://localhost:3000/api/barber', {
+                const response = await fetch('https://barberbackend-3z4s.onrender.com/api/barber', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

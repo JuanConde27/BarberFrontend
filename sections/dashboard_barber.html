@@ -92,7 +92,7 @@
             }
 
 
-            const barbers = await fetch(`http://localhost:3000/api/barber/${id}`, {
+            const barbers = await fetch(`https://barberbackend-3z4s.onrender.com/api/barber/${id}`, {
                 method: 'GET',
                 headers: {
                     authorization: `Bearer ${document.cookie.split('=')[1]}`
@@ -112,7 +112,7 @@
 
             const getBookings = async () => {
                 try {
-                    const response = await fetch(`http://localhost:3000/api/booking/barber/${idBarber}`, {
+                    const response = await fetch(`https://barberbackend-3z4s.onrender.com/api/booking/barber/${idBarber}`, {
                         method: 'GET',
                         headers: {
                             authorization: `Bearer ${document.cookie.split('=')[1]}`
@@ -166,7 +166,7 @@
                             }).then(async (result) => {
                                 if (result.isConfirmed) {
                                     const idBooking = e.target.dataset.id;
-                                    const response = await fetch(`http://localhost:3000/api/booking/${idBooking}`, {
+                                    const response = await fetch(`https://barberbackend-3z4s.onrender.com/api/booking/${idBooking}`, {
                                         method: 'DELETE',
                                         headers: {
                                             authorization: `Bearer ${document.cookie.split('=')[1]}`
@@ -203,7 +203,7 @@
                                 if (result.isConfirmed) {
                                     const idBooking = e.target.dataset.id;
                                     const status = 'CONFIRMED';
-                                    const response = await fetch(`http://localhost:3000/api/booking/status/${idBooking}`, {
+                                    const response = await fetch(`https://barberbackend-3z4s.onrender.com/api/booking/status/${idBooking}`, {
                                         method: 'PUT',
                                         headers: {
                                             authorization: `Bearer ${document.cookie.split('=')[1]}`,

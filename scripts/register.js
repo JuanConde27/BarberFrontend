@@ -86,7 +86,7 @@ formregister.addEventListener("submit", async (e) => {
   }
 
   try {
-    const response = await axios.post("http://localhost:3000/api/register", {
+    const response = await axios.post("https://barberbackend-3z4s.onrender.com/api/register", {
       name,
       email,
       password,

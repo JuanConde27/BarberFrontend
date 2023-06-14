@@ -13,7 +13,7 @@ resetForm.addEventListener('submit', async (e) => {
         return;
     }
     try {
-        const response = await fetch(`http://localhost:3000/api/reset-password/${token}`, {
+        const response = await fetch(`https://barberbackend-3z4s.onrender.com/api/reset-password/${token}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

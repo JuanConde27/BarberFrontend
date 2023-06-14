@@ -13,7 +13,7 @@ btnLogout.addEventListener('click', () => {
 
 document.addEventListener('DOMContentLoaded', async () => {
     const element = document.getElementById('barber');
-    const barbers = await fetch('http://localhost:3000/api/barber', {
+    const barbers = await fetch('https://barberbackend-3z4s.onrender.com/api/barber', {
         method: 'GET',
         headers: {
             Authorization: `Bearer ${document.cookie.split('=')[1]}`
@@ -68,7 +68,7 @@ form.addEventListener('submit', async (event) => {
     }
 
     try {
-        const response = await fetch('http://localhost:3000/api/booking', {
+        const response = await fetch('https://barberbackend-3z4s.onrender.com/api/booking', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

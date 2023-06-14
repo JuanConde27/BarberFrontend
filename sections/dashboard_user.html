@@ -141,7 +141,7 @@
                 window.location.href = '../index.html';
             }
 
-            const users = await fetch(`http://localhost:3000/api/users/${id}`, {
+            const users = await fetch(`https://barberbackend-3z4s.onrender.com/api/users/${id}`, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${document.cookie.split('=')[1]}`
@@ -159,7 +159,7 @@
 
             const getBookings = async () => {
                 try {
-                    const bookings = await fetch(`http://localhost:3000/api/booking/client/${idUser}`, {
+                    const bookings = await fetch(`https://barberbackend-3z4s.onrender.com/api/booking/client/${idUser}`, {
                         method: 'GET',
                         headers: {
                             Authorization: `Bearer ${document.cookie.split('=')[1]}`
@@ -221,7 +221,7 @@
                             }).then(async (result) => {
                                 if (result.isConfirmed) {
                                     const bookingId = e.target.id;
-                                    const deleteBooking = await fetch(`http://localhost:3000/api/booking/${bookingId}`, {
+                                    const deleteBooking = await fetch(`https://barberbackend-3z4s.onrender.com/api/booking/${bookingId}`, {
                                         method: 'DELETE',
                                         headers: {
                                             Authorization: `Bearer ${document.cookie.split('=')[1]}`
@@ -277,7 +277,7 @@
                             const serviceInput = document.getElementById('servicio');
                             const commentInput = document.getElementById('comment');
                             const bookingId = e.target.id;
-                            const booking = await fetch(`http://localhost:3000/api/booking/${bookingId}`, {
+                            const booking = await fetch(`https://barberbackend-3z4s.onrender.com/api/booking/${bookingId}`, {
                                 method: 'GET',
                                 headers: {
                                     Authorization: `Bearer ${document.cookie.split('=')[1]}`
@@ -302,7 +302,7 @@
                                     service,
                                     comments
                                 }
-                                const editBooking = await fetch(`http://localhost:3000/api/booking/${bookingId}`, {
+                                const editBooking = await fetch(`https://barberbackend-3z4s.onrender.com/api/booking/${bookingId}`, {
                                     method: 'PUT',
                                     headers: {
                                         'Content-Type':
@@ -361,7 +361,7 @@
                 }).then((result) => {
                     const deleteUser = async () => {
                         try {
-                            const deleteUser = await fetch(`http://localhost:3000/api/users/${idUser}`, {
+                            const deleteUser = await fetch(`https://barberbackend-3z4s.onrender.com/api/users/${idUser}`, {
                                 method: 'DELETE',
                                 headers: {
                                     Authorization: `Bearer ${document.cookie.split('=')[1]}`
@@ -427,7 +427,7 @@
                         name,
                         email
                     }
-                    const editUser = await fetch(`http://localhost:3000/api/users/${idUser}`, {
+                    const editUser = await fetch(`https://barberbackend-3z4s.onrender.com/api/users/${idUser}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
@@ -466,7 +466,7 @@
                     const user = {
                         password
                     }
-                    const editUser = await fetch(`http://localhost:3000/api/users/password/${idUser}`, {
+                    const editUser = await fetch(`https://barberbackend-3z4s.onrender.com/api/users/password/${idUser}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',

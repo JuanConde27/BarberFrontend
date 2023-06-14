@@ -3,7 +3,7 @@ form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const email = form.elements.email.value;
     try {
-        const response = await fetch("http://localhost:3000/api/forgot", {
+        const response = await fetch("https://barberbackend-3z4s.onrender.com/api/forgot", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

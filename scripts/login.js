@@ -29,7 +29,7 @@ formlogin.addEventListener("submit", async (e) => {
   }
 
   try {
-    const res = await axios.post("http://localhost:3000/api/login", {
+    const res = await axios.post("https://barberbackend-3z4s.onrender.com/api/login", {
       email,
       password,
     });
